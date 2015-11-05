@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    clean: ['./concatClient.js', './concatLib.js', './minifyShortly.js'],
+    clean: ['./public/client/concatClient.js', './public/lib/concatLib.js', './public/client/minifiedClient.js', './public/client/minifiedClient.js'],
     concat: {
       options: {
         separator: ';'
