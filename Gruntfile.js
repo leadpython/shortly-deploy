@@ -2,13 +2,18 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: ['./concatClient.js', './concatLib.js', './minifyShortly.js'],
     concat: {
       options: {
         separator: ';'
       },
-      dist: {
-        src: ['./**/*.js', '!./node_modules/**/*.js', '!./public/**/*.js', '!./test/*.js'],
-        dest: 'concat.js'
+      client: {
+        src: ['./public/client/*.js'],
+        dest: './public/client/concatClient.js'
+      },
+      lib: {
+        src: ['./public/lib/*.js'],
+        dest: './public/lib/concatLib.js'
       }
     },
 
@@ -30,7 +35,8 @@ module.exports = function(grunt) {
     uglify: {
       my_target: {
           files: {
-            'minifyShortly.js': ['concat.js']
+            './public/client/minifiedClient.js': './public/client/concatClient.js',
+            './public/lib/minifiedLib.js': './public/lib/concatLib.js'
           }
         }
     },
@@ -54,9 +60,9 @@ module.exports = function(grunt) {
         target: {
           files: [{
             expand: true,
-            cwd: './public/lib',
+            cwd: './public',
             src: ['*.css'],
-            dest: './public/lib',
+            dest: './public',
             ext: '.min.css'
           }]
         }
@@ -81,6 +87,13 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+          command: [
+            'git add .',
+            'git commit -m "Deployed Project"',
+            'git push origin master',
+            'git push azure master',
+            'azure site browse'
+            ].join('&&')
       }
     },
   });
@@ -90,6 +103,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
@@ -119,8 +133,11 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('upload', function(n) {
+    console.log(n);
     if(grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run(['clean', 'concat', 'uglify', 'jshint', 'cssmin']);
+      //grunt.registerTask('default', ['clean','concat', 'uglify', 'jshint', 'cssmin']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
@@ -128,8 +145,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [
       // add your production server task here
+      'shell'
   ]);
 
-  grunt.registerTask('default', ['concat', 'uglify', 'jshint', 'cssmin']);
+  
 
 };
