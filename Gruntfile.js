@@ -3,6 +3,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      options: {
+        separator: ';'
+      },
+      dist: {
+        src: ['./**/*.js', '!./node_modules/**/*.js', '!./public/**/*.js', '!./test/*.js'],
+        dest: 'concat.js'
+      }
     },
 
     mochaTest: {
@@ -21,11 +28,17 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      my_target: {
+          files: {
+            'minifyShortly.js': ['concat.js']
+          }
+        }
     },
 
     jshint: {
       files: [
         // Add filespec list here
+        'minifyShortly.js'
       ],
       options: {
         force: 'true',
@@ -38,7 +51,15 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
-        // Add filespec list here
+        target: {
+          files: [{
+            expand: true,
+            cwd: './public/lib',
+            src: ['*.css'],
+            dest: './public/lib',
+            ext: '.min.css'
+          }]
+        }
     },
 
     watch: {
@@ -109,5 +130,6 @@ module.exports = function(grunt) {
       // add your production server task here
   ]);
 
+  grunt.registerTask('default', ['concat', 'uglify', 'jshint', 'cssmin']);
 
 };
