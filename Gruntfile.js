@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         dest: './public/client/concatClient.js'
       },
       lib: {
-        src: ['./public/lib/*.js'],
+        src: ['./public/lib/jquery.js', './public/lib/underscore.js','./public/lib/backbone.js','./public/lib/handlebars.js'],
         dest: './public/lib/concatLib.js'
       }
     },
@@ -75,6 +75,7 @@ module.exports = function(grunt) {
           'public/lib/**/*.js',
         ],
         tasks: [
+          'clean',
           'concat',
           'uglify'
         ]
